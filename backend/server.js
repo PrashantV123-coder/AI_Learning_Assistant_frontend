@@ -15,7 +15,7 @@ const app = express();
 //Middleware to handle cors
 app.use(
     cors({
-        origin: "*",
+        origin: "https://ai-learning-assistant-frontend-liard.vercel.app/",
         methods: ["GET", "POST", "PUT", "DELETE"],
         allowedHeaders: ["Content-Type", "Authorization"],
     })
@@ -42,4 +42,9 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads"), {}));
 
 //Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+
+app.get("/", (req, res) => {
+  res.send("Backend running");
+});
+
+module.exports = app;
