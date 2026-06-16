@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/UserContext";
 import Input from "../../components/Inputs/Input";
 import ProfilePhotoSelector from "../../components/Inputs/ProfilePhotoSelector";
+import axiosInstance from "../../utils/axiosInstance";
+import { API_PATHS } from "../../utils/apiPaths";
 
 const SignUp = ({ setCurrentPage }) => {
   const [formData, setFormData] = useState({
@@ -44,8 +46,8 @@ const SignUp = ({ setCurrentPage }) => {
       formDataReq.append("password", formData.password);
       formDataReq.append("image", image); // MUST MATCH multer key
 
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
+      const response = await axiosInstance.post(
+        API_PATHS.AUTH.REGISTER,
         formDataReq
       );
 
@@ -81,7 +83,7 @@ const SignUp = ({ setCurrentPage }) => {
           type="text"
           value={formData.name}
           onChange={(e) => handleChange("name", e.target.value)}
-          className=""
+          className="border"
         />
 
         <Input
@@ -89,6 +91,7 @@ const SignUp = ({ setCurrentPage }) => {
           type="email"
           value={formData.email}
           onChange={(e) => handleChange("email", e.target.value)}
+          className="border"
         />
 
         <Input
@@ -96,6 +99,7 @@ const SignUp = ({ setCurrentPage }) => {
           type="password"
           value={formData.password}
           onChange={(e) => handleChange("password", e.target.value)}
+          className="border"
         />
 
         {error && <p className="text-red-500 text-xs">{error}</p>}

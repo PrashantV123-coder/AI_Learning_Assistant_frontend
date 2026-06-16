@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://ai-learning-assistant-backend-3slg.vercel.app/",
+  baseURL: "https://ai-learning-assistant-backend-qyii.onrender.com",
 });
 
 axiosInstance.interceptors.request.use(

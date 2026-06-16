@@ -14,11 +14,15 @@ const app = express();
 
 //Middleware to handle cors
 app.use(
-    cors({
-        origin: "https://ai-learning-assistant-frontend-liard.vercel.app/",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    })
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://ai-learning-assistant-frontend-7uis.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
 );
 
 
@@ -38,7 +42,7 @@ app.post("/api/ai/generate-explanation", protect, generateConceptExplanation);
 
 
 //Serve uploads folder
-app.use("/uploads", express.static(path.join(__dirname, "uploads"), {}));
+// app.use("/uploads", express.static(path.join(__dirname, "uploads"), {}));
 
 //Start server
 const PORT = process.env.PORT || 5000;
@@ -46,5 +50,11 @@ const PORT = process.env.PORT || 5000;
 app.get("/", (req, res) => {
   res.send("Backend running");
 });
+
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
 
 module.exports = app;
