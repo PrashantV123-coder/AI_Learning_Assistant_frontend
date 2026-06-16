@@ -83,7 +83,7 @@ const SignUp = ({ setCurrentPage }) => {
           type="text"
           value={formData.name}
           onChange={(e) => handleChange("name", e.target.value)}
-          className=""
+          className="border"
         />
 
         <Input
@@ -91,6 +91,7 @@ const SignUp = ({ setCurrentPage }) => {
           type="email"
           value={formData.email}
           onChange={(e) => handleChange("email", e.target.value)}
+          className="border"
         />
 
         <Input
@@ -98,6 +99,7 @@ const SignUp = ({ setCurrentPage }) => {
           type="password"
           value={formData.password}
           onChange={(e) => handleChange("password", e.target.value)}
+          className="border"
         />
 
         {error && <p className="text-red-500 text-xs">{error}</p>}
