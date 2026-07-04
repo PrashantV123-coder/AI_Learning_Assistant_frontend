@@ -24,16 +24,16 @@ const Dashboard = () => {
   });
 
   const fetchAllSessions = async () => {
-    try{
+    try {
       const response = await axiosInstance.get(API_PATHS.SESSION.GET_ALL);
       setSessions(response.data);
-    } catch(error) {
+    } catch (error) {
       console.error("Error fetching session data", error);
     }
   };
 
   const deleteSession = async (sessionData) => {
-    try{
+    try {
       await axiosInstance.delete(API_PATHS.SESSION.DELETE(sessionData?._id));
 
       toast.success("Session Deleted Successfully");
@@ -42,7 +42,7 @@ const Dashboard = () => {
         data: null,
       });
       fetchAllSessions();
-    } catch(error) {
+    } catch (error) {
       console.error("Error deleting session data:", error);
     }
   };
@@ -53,25 +53,49 @@ const Dashboard = () => {
   return (
     <DashboardLayout>
       <div className="container mx-auto pt-4 pb-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-7 pt-1 pb-6 px-4 md:px-0">
-          {sessions?.map((data, index) => (
-            <SummaryCard
-              key={data?._id}
-              colors={CARD_BG[index % CARD_BG.length]}
-              role={data?.role || ""}
-              topicsToFocus={data?.topicsToFocus || ""}
-              experience={data?.experience || "-"}
-              questions={data?.questions?.length || "-"}
-              description={data?.description || "-"}
-              lastUpdated={
-                data?.updatedAt
-                  ? moment(data.updatedAt).format("Do MMM YYYY")
-                  : ""
-              }
-              onSelect={() => navigate(`/interview-prep/${data?._id}`)}
-              onDelete={() => setOpenDeleteAlert({ open: true, data })}
-            />
-          ))}
+        <div className="pt-1 pb-6 px-4 md:px-0">
+          {sessions.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-7">
+              {sessions.map((data, index) => (
+                <SummaryCard
+                  key={data?._id}
+                  colors={CARD_BG[index % CARD_BG.length]}
+                  role={data?.role || ""}
+                  topicsToFocus={data?.topicsToFocus || ""}
+                  experience={data?.experience || "-"}
+                  questions={data?.questions?.length || "-"}
+                  description={data?.description || "-"}
+                  lastUpdated={
+                    data?.updatedAt
+                      ? moment(data.updatedAt).format("Do MMM YYYY")
+                      : ""
+                  }
+                  onSelect={() => navigate(`/interview-prep/${data?._id}`)}
+                  onDelete={() => setOpenDeleteAlert({ open: true, data })}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+              <div className="text-7xl mb-4">📂</div>
+
+              <h2 className="text-2xl font-bold text-gray-700">
+                No Interview Sessions Yet
+              </h2>
+
+              <p className="text-gray-500 mt-2 max-w-md">
+                Create your first interview preparation session to start
+                practicing.
+              </p>
+
+              <button
+                onClick={() => setOpenCreateModal(true)}
+                className="mt-6 bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold transition"
+              >
+                Create First Session
+              </button>
+            </div>
+          )}
         </div>
 
         <button
@@ -83,10 +107,12 @@ const Dashboard = () => {
         </button>
       </div>
 
-      <Modal isOpen={openCreateModal} onClose={() => {
-        setOpenCreateModal(false);
-      }}
-      hideHeader
+      <Modal
+        isOpen={openCreateModal}
+        onClose={() => {
+          setOpenCreateModal(false);
+        }}
+        hideHeader
       >
         <div>
           <CreateSessionForm />
