@@ -1,66 +1,107 @@
-import React, { useRef, useState } from "react";
-import { LuUser, LuUpload, LuTrash } from "react-icons/lu";
+import React, { useEffect, useRef, useState } from "react"
+import { LuUser, LuUpload, LuTrash } from "react-icons/lu"
 
 const ProfilePhotoSelector = ({ image, setImage, preview, setPreview }) => {
-  const inputRef = useRef(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+	const inputRef = useRef(null)
+	const [previewUrl, setPreviewUrl] = useState(null)
 
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      //update the img state
-      setImage(file);
+	useEffect(() => {
+		return () => {
+			if (previewUrl?.startsWith("blob:")) {
+				URL.revokeObjectURL(previewUrl)
+			}
+		}
+	}, [previewUrl])
 
-      //generate preview url from the file
-      const preview = URL.createObjectURL(file);
-      if (setPreview) {
-        setPreview(preview);
-      }
-      setPreviewUrl(preview);
-    }
-  };
+	const handleImageChange = (event) => {
+		const file = event.target.files?.[0]
 
-  const handleRemoveImage = () => {
-    setImage(null);
-    setPreviewUrl(null);
+		if (!file) return
 
-    if (setPreview) {
-      setPreview(null);
-    }
-  };
+		if (!file.type.startsWith("image/")) {
+			event.target.value = ""
+			return
+		}
 
-  const onChooseFile = () => {
-    inputRef.current.click();
-  };
+		const newPreviewUrl = URL.createObjectURL(file)
 
-  return (
-    <div className="flex justify-center mb-6">
-      <input
-        type="file"
-        accept="image/*"
-        ref={inputRef}
-        onChange={handleImageChange}
-        className="hidden"
-      />
+		setImage(file)
+		setPreviewUrl(newPreviewUrl)
 
-      {!image ? (
-        <div className="w-20 h-20 flex items-center justify-center bg-orange-50 rounded-full relative cursor-pointer">
-          <LuUser className="text-4xl text-orange-500" />
+		if (setPreview) {
+			setPreview(newPreviewUrl)
+		}
+	}
 
-          <button type="button" className="w-8 h-8 flex items-center justify-center bg-linear-to-r from-orange-500/85 to-orange-600 text-white rounded-full absolute -bottom-1 -right-1 cursor-pointer" onClick={onChooseFile}>
-            <LuUpload />
-          </button>
-        </div>
-      ) : (
-        <div className="relative">
-          <img src={preview || previewUrl} alt="profile photo" className="w-20 h-20 rounded-full object-cover" />
-          <button type="button" className="w-8 h-8 flex items-center justify-center bg-red-500 text-white rounded-full absolute -bottom-1 -right-1 cursor-pointer" onClick={handleRemoveImage}>
-            <LuTrash />
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
+	const handleRemoveImage = () => {
+		setImage(null)
+		setPreviewUrl(null)
 
-export default ProfilePhotoSelector;
+		if (setPreview) {
+			setPreview(null)
+		}
+
+		if (inputRef.current) {
+			inputRef.current.value = ""
+		}
+	}
+
+	const onChooseFile = () => {
+		inputRef.current?.click()
+	}
+
+	const imageSource = preview || previewUrl
+
+	return (
+		<div className="mb-6 flex w-full justify-center px-2">
+			<input
+				ref={inputRef}
+				type="file"
+				accept="image/*"
+				onChange={handleImageChange}
+				className="hidden"
+				aria-label="Choose profile photo"
+			/>
+
+			{!image ? (
+				<div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-orange-50 sm:h-24 sm:w-24">
+					<LuUser className="h-10 w-10 text-orange-500 sm:h-12 sm:w-12" />
+
+					<button
+						type="button"
+						onClick={onChooseFile}
+						aria-label="Upload profile photo"
+						className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-linear-to-r from-orange-500 to-orange-600 text-white shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2"
+					>
+						<LuUpload size={17} />
+					</button>
+				</div>
+			) : (
+				<div className="relative h-20 w-20 sm:h-24 sm:w-24">
+					{imageSource ? (
+						<img
+							src={imageSource}
+							alt="Profile preview"
+							className="h-full w-full rounded-full border-2 border-white object-cover shadow-md"
+						/>
+					) : (
+						<div className="flex h-full w-full items-center justify-center rounded-full bg-orange-50">
+							<LuUser className="h-10 w-10 text-orange-500" />
+						</div>
+					)}
+
+					<button
+						type="button"
+						onClick={handleRemoveImage}
+						aria-label="Remove profile photo"
+						className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-red-500 text-white shadow-md transition-colors hover:bg-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2"
+					>
+						<LuTrash size={16} />
+					</button>
+				</div>
+			)}
+		</div>
+	)
+}
+
+export default ProfilePhotoSelector

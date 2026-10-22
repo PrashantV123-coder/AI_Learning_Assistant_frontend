@@ -1,21 +1,23 @@
-import React from 'react'
-import ProfileInfoCard from '../Cards/ProfileInfoCard';
-import { Link } from 'react-router-dom';
+import React from "react"
+import ProfileInfoCard from "../Cards/ProfileInfoCard"
+import { Link } from "react-router-dom"
 
 const Navbar = () => {
-  return (
-    <div className='h-16 bg-white border border-b border-gray-200/50 backdrop-blur-[2px] py-2.5 px-4 md:px-0 sticky top-0 z-30'>
-        <div className='container mx-auto flex items-center justify-between gap-5'>
-            <Link to="/dashboard">
-                <h2 className='text-lg md:text-xl font-medium text-black leading-5'>
-                    Interview Prep AI
-                </h2>
-            </Link>
+	return (
+		<header className="sticky top-0 z-30 w-full border-b border-gray-200/70 bg-white/95 backdrop-blur-md">
+			<div className="mx-auto flex min-h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+				<Link to="/dashboard" className="min-w-0 flex-1" aria-label="Interview Prep AI Dashboard">
+					<h2 className="truncate text-base font-semibold leading-6 text-black sm:text-lg md:text-xl">
+						Interview Prep AI
+					</h2>
+				</Link>
 
-            <ProfileInfoCard />
-        </div>
-    </div>
-  )
+				<div className="flex shrink-0 items-center justify-end">
+					<ProfileInfoCard />
+				</div>
+			</div>
+		</header>
+	)
 }
 
 export default Navbar

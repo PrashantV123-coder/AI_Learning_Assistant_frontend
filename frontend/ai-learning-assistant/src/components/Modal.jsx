@@ -1,47 +1,65 @@
-import React from "react";
+import React, { useEffect } from "react"
+import { LuX } from "react-icons/lu"
 
 const Modal = ({ children, isOpen, onClose, title, hideHeader }) => {
+	useEffect(() => {
+		if (!isOpen) return
 
-    if(!isOpen) return null;
+		const handleEscape = (event) => {
+			if (event.key === "Escape") {
+				onClose?.()
+			}
+		}
 
-  return (
-    <div className="fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black/40">
-      {/* modal content */}
-      <div className="relative flex flex-col bg-white shadow-lg rounded-lg overflow-hidden">
-        {/* modal header */}
-        {!hideHeader && (
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <h3 className="md:text-lg font-medium text-gray-900">{title}</h3>
-          </div>
-        )}
+		window.addEventListener("keydown", handleEscape)
 
-        <button
-          type="button"
-          className="text-gray-400 bg-transparent hover:bg-orange-100 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex justify-center items-center absolute top-3.5 right-3.5 cursor-pointer"
-          onClick={onClose}
-        >
-          <svg
-            className="w-3 h-3"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 14 14"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M1 1l6 6m0 0l6 6M7 7l6-6M7 7l-6 6"
-            />
-          </svg>
-        </button>
+		return () => {
+			window.removeEventListener("keydown", handleEscape)
+		}
+	}, [isOpen, onClose])
 
-        {/* modal body scrollable */}
-        <div className="flex-1 overflow-y-auto custm-scrollbar">{children}</div>
-      </div>
-    </div>
-  );
-};
+	if (!isOpen) return null
 
-export default Modal;
+	return (
+		<div
+			className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-3 sm:p-5"
+			onMouseDown={(event) => {
+				if (event.target === event.currentTarget) {
+					onClose?.()
+				}
+			}}
+		>
+			<div
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby={title && !hideHeader ? "modal-title" : undefined}
+				className="relative flex max-h-[calc(100dvh-1.5rem)] w-full min-w-0 max-w-lg flex-col overflow-hidden rounded-xl bg-white shadow-xl sm:max-h-[calc(100dvh-2.5rem)] sm:rounded-2xl"
+				onMouseDown={(event) => event.stopPropagation()}
+			>
+				{!hideHeader && (
+					<div className="flex shrink-0 items-center justify-between gap-3 border-b border-gray-200 px-4 py-4 pr-14 sm:px-6">
+						<h3
+							id="modal-title"
+							className="min-w-0 wrap-break-words text-base font-semibold text-gray-900 sm:text-lg"
+						>
+							{title}
+						</h3>
+					</div>
+				)}
+
+				<button
+					type="button"
+					onClick={onClose}
+					aria-label="Close modal"
+					className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-orange-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+				>
+					<LuX size={19} />
+				</button>
+
+				<div className="custm-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">{children}</div>
+			</div>
+		</div>
+	)
+}
+
+export default Modal

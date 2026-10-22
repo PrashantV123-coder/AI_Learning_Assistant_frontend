@@ -86,7 +86,7 @@ const CreateSessionForm = () => {
         <h3 className='text-lg font-semibold text-black'>
             Start a New Interview Journey
         </h3>
-        <p className='text-xs text-slate-700 mt-[5px] mb-3'>
+        <p className='text-xs text-slate-700 mt-1.25 mb-3'>
             Fill out a few quick detaila and unlock your personalised set of interview questions!
         </p>
 
