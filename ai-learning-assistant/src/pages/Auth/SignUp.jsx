@@ -1,126 +1,157 @@
-import React, { useState, useContext } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../context/UserContext";
-import Input from "../../components/Inputs/Input";
-import ProfilePhotoSelector from "../../components/Inputs/ProfilePhotoSelector";
-import axiosInstance from "../../utils/axiosInstance";
-import { API_PATHS } from "../../utils/apiPaths";
+﻿import React, { useState, useContext } from "react"
+import { useNavigate } from "react-router-dom"
+import { UserContext } from "../../context/UserContext"
+import Input from "../../components/Inputs/Input"
+import ProfilePhotoSelector from "../../components/Inputs/ProfilePhotoSelector"
+import axiosInstance from "../../utils/axiosInstance"
+import { API_PATHS } from "../../utils/apiPaths"
+import { validateEmail } from "../../utils/helper"
 
 const SignUp = ({ setCurrentPage }) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+	const [formData, setFormData] = useState({
+		name: "",
+		email: "",
+		password: "",
+	})
 
-  const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [error, setError] = useState("");
+	const [image, setImage] = useState(null)
+	const [preview, setPreview] = useState(null)
+	const [error, setError] = useState("")
+	const [isLoading, setIsLoading] = useState(false)
 
-  const navigate = useNavigate();
-  const { updateUser } = useContext(UserContext);
+	const navigate = useNavigate()
+	const { updateUser } = useContext(UserContext)
 
-  const handleChange = (key, value) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
-  };
+	const handleChange = (key, value) => {
+		setFormData((prev) => ({
+			...prev,
+			[key]: value,
+		}))
+	}
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    setError("");
+	const handleSignup = async (e) => {
+		e.preventDefault()
+		setError("")
 
-    // 🔴 Frontend validation (important)
-    if (!formData.name || !formData.email || !formData.password) {
-      return setError("All fields are required");
-    }
+		const name = formData.name.trim()
+		const email = formData.email.trim()
 
-    if (!image) {
-      return setError("Profile image is required");
-    }
+		if (!name || !email || !formData.password) {
+			setError("All fields are required.")
+			return
+		}
 
-    try {
-      // 🔥 MUST use FormData (same as Postman)
-      const formDataReq = new FormData();
-      formDataReq.append("name", formData.name);
-      formDataReq.append("email", formData.email);
-      formDataReq.append("password", formData.password);
-      formDataReq.append("image", image); // MUST MATCH multer key
+		if (!validateEmail(email)) {
+			setError("Please enter a valid email address.")
+			return
+		}
 
-      const response = await axiosInstance.post(
-        API_PATHS.AUTH.REGISTER,
-        formDataReq
-      );
+		if (!image) {
+			setError("Please select a profile image.")
+			return
+		}
 
-      // Save token
-      localStorage.setItem("token", response.data.token);
+		setIsLoading(true)
 
-      // Update user context
-      updateUser(response.data);
+		try {
+			const formDataReq = new FormData()
+			formDataReq.append("name", name)
+			formDataReq.append("email", email)
+			formDataReq.append("password", formData.password)
+			formDataReq.append("image", image)
 
-      // Navigate
-      navigate("/dashboard");
+			const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, formDataReq)
 
-    } catch (err) {
-      console.error("SIGNUP ERROR:", err.response?.data);
-      setError(err.response?.data?.message || "Signup failed");
-    }
-  };
+			if (response.data.token) {
+				localStorage.setItem("token", response.data.token)
+			}
 
-  return (
-    <div className="w-[90vw] md:w-[33vw] p-7">
-      <h3 className="text-lg font-semibold mb-2">Create Account</h3>
+			updateUser(response.data)
+			navigate("/dashboard")
+		} catch (err) {
+			console.error("SIGNUP ERROR:", err.response?.data)
 
-      <ProfilePhotoSelector
-        image={image}
-        setImage={setImage}
-        preview={preview}
-        setPreview={setPreview}
-      />
+			const message = err.response?.data?.message
+			setError(Array.isArray(message) ? message.join(", ") : message || "Signup failed. Please try again.")
+		} finally {
+			setIsLoading(false)
+		}
+	}
 
-      <form onSubmit={handleSignup} className="space-y-3 mt-4">
-        <Input
-          label="Full Name"
-          type="text"
-          value={formData.name}
-          onChange={(e) => handleChange("name", e.target.value)}
-          className="border border-gray-400 rounded-md"
-        />
+	return (
+		<div className="mx-auto flex w-full max-w-md flex-col p-4 sm:p-6 md:p-7">
+			<div className="mb-5">
+				<h3 className="text-xl font-semibold text-gray-900 sm:text-2xl">Create Account</h3>
 
-        <Input
-          label="Email"
-          type="email"
-          value={formData.email}
-          onChange={(e) => handleChange("email", e.target.value)}
-          className="border border-gray-400 rounded-md"
-        />
+				<p className="mt-2 text-sm leading-6 text-slate-600">Enter your details to get started.</p>
+			</div>
 
-        <Input
-          label="Password"
-          type="password"
-          value={formData.password}
-          onChange={(e) => handleChange("password", e.target.value)}
-          className="border border-gray-400 rounded-md"
-        />
+			<div className="flex w-full justify-center">
+				<ProfilePhotoSelector image={image} setImage={setImage} preview={preview} setPreview={setPreview} />
+			</div>
 
-        {error && <p className="text-red-500 text-xs">{error}</p>}
+			<form onSubmit={handleSignup} className="mt-5 w-full space-y-4">
+				<div className="w-full min-w-0">
+					<Input
+						label="Full Name"
+						type="text"
+						value={formData.name}
+						onChange={({ target }) => handleChange("name", target.value)}
+						placeholder="Enter your full name"
+					/>
+				</div>
 
-        <button type="submit" className="btn-primary w-full">
-          SIGN UP
-        </button>
+				<div className="w-full min-w-0">
+					<Input
+						label="Email Address"
+						type="email"
+						value={formData.email}
+						onChange={({ target }) => handleChange("email", target.value)}
+						placeholder="john@example.com"
+					/>
+				</div>
 
-        <p className="text-xs mt-3">
-          Already have an account?{" "}
-          <button
-            type="button"
-            onClick={() => setCurrentPage("login")}
-            className="underline"
-          >
-            Login
-          </button>
-        </p>
-      </form>
-    </div>
-  );
-};
+				<div className="w-full min-w-0">
+					<Input
+						label="Password"
+						type="password"
+						value={formData.password}
+						onChange={({ target }) => handleChange("password", target.value)}
+						placeholder="Create a password"
+					/>
+				</div>
 
-export default SignUp;
+				{error && (
+					<p
+						role="alert"
+						aria-live="polite"
+						className="wrap-break-words rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm leading-5 text-red-600"
+					>
+						{error}
+					</p>
+				)}
+
+				<button
+					type="submit"
+					disabled={isLoading}
+					className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-60"
+				>
+					{isLoading ? "CREATING ACCOUNT..." : "SIGN UP"}
+				</button>
+
+				<p className="pt-1 text-center text-sm leading-6 text-slate-700">
+					Already have an account?{" "}
+					<button
+						type="button"
+						onClick={() => setCurrentPage("login")}
+						className="ml-1 font-semibold text-primary underline underline-offset-2"
+					>
+						Login
+					</button>
+				</p>
+			</form>
+		</div>
+	)
+}
+
+export default SignUp

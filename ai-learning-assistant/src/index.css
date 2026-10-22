@@ -1,91 +1,231 @@
+﻿@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Outfit&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:wght@500&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Outfit&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:wght@500&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 
-@theme{
+@theme {
   --font-display: "Urbanist", sans-serif;
   --breakpoint-3xl: 1920px;
-  --color-primary: #ff9324
+  --color-primary: #ff9324;
 }
 
-@layer base{
-  html{
+/* Global reset */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    width: 100%;
+    min-height: 100%;
     font-family: var(--font-display);
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
   }
 
-  body{
+  body {
+    width: 100%;
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
     background-color: #fcfbfc;
-    overflow-x: hidden;
+    overflow-x: clip;
+    color: #111827;
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+  }
+
+  img,
+  video {
+    height: auto;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  input,
+  textarea,
+  select {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  a {
+    overflow-wrap: anywhere;
   }
 }
 
-/* Custom scrollbar styling */
-.custom-scrollbar::-webkit-scrollbar{
-  width: 4px;
+/* Custom scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 100, 100, 0.4) transparent;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb{
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: rgba(100, 100, 100, 0.4);
   border-radius: 10px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track{
+.custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 
-@layer utilities{
-  /* Animate text with a shine effect  */
-  @keyframes text-shine{
+/* Animations */
+@layer utilities {
+  @keyframes text-shine {
     0% {
       background-position: 0% 50%;
     }
+
     100% {
       background-position: 100% 50%;
     }
   }
 
-  .animate-text-shine{
+  .animate-text-shine {
     animation: text-shine 3s ease-in-out infinite alternate;
   }
 
   @keyframes blob1 {
-    0%, 100% { transform: translate(0px, 0px) scale(1);}
-    33% { transform: translate(30px, -60px) scale(1.1);}
-    66% {transform: translate(-20px, 20px) scale(0.9);}
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+      transform: translate(30px, -30px) scale(1.05);
+    }
+
+    66% {
+      transform: translate(-20px, 15px) scale(0.95);
+    }
   }
 
   @keyframes blob2 {
-    0%, 100% { transform: translate(0px, 0px) scale(1);}
-    33% { transform: translate(-40px, 60px) scale(1.05);}
-    66% {transform: translate(20px, -40px) scale(0.95);}
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+      transform: translate(-25px, 30px) scale(1.04);
+    }
+
+    66% {
+      transform: translate(15px, -20px) scale(0.96);
+    }
   }
 
   @keyframes blob3 {
-    0%, 100% { transform: translate(0px, 0px) scale(1);}
-    33% { transform: translate(20px, 140px) scale(1.15);}
-    66% {transform: translate(-30px, -30px) scale(0.85);}
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+      transform: translate(15px, 35px) scale(1.08);
+    }
+
+    66% {
+      transform: translate(-20px, -15px) scale(0.94);
+    }
   }
 
-  animate-blob1 {
+  .animate-blob1 {
     animation: blob1 8s ease-in-out infinite;
   }
 
-  animate-blob2 {
+  .animate-blob2 {
     animation: blob2 10s ease-in-out infinite;
   }
 
-  animate-blob3 {
+  .animate-blob3 {
     animation: blob3 12s ease-in-out infinite;
   }
 }
 
+/* Reusable form input */
 .input-box {
-  @apply w-full flex justify-between gap-3 text-sm text-black bg-gray-50/50 rounded px-4 py-3 mb-4 mt-3 border border-gray-100 outline-none focus-within:border-orange-300;
+  @apply flex w-full min-w-0 items-center justify-between gap-3
+    rounded border border-gray-100 bg-gray-50/50
+    px-3 py-3 text-sm text-black outline-none
+    focus-within:border-orange-300;
+  margin-top: 12px;
+  margin-bottom: 16px;
 }
 
+.input-box input {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  outline: none;
+}
+
+.input-box input::placeholder,
+textarea::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
+/* Reusable primary button */
 .btn-primary {
-  @apply w-full flex items-center justify-center gap-3 text-sm font-medium text-white bg-black shadow-lg shadow-orange-600/5 p-[10px] rounded-md my-1 hover:bg-orange-600/15 hover:text-black cursor-pointer;
+  @apply flex w-full min-w-0 items-center justify-center gap-3
+    rounded-md bg-black p-3 text-sm font-medium text-white
+    shadow-lg shadow-orange-600/5
+    transition-colors duration-200
+    hover:bg-orange-600 hover:text-white
+    disabled:cursor-not-allowed disabled:opacity-60;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
-.btn-small {
-  @apply flex items-center justify-center gap-3 bg-linear-to-r from-[#ff9324] to-[#e99a4b] text-sm font-semibold text-white px-7 py-2 rounded-lg hover:bg-black hover:text-white transition-colors cursor-pointer hover:shadow-2xl hover:shadow-orange-300;
+/* Small phones */
+@media (max-width: 480px) {
+  .input-box {
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .btn-primary {
+    padding: 12px;
+  }
+}
+
+/* Reduce unnecessary motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
